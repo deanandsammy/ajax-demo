@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+/.idea/
+*.iml
+/validateUsername/web/WEB-INF/classes
+/validateUsername/web/WEB-INF/lib
+out
