@@ -6,6 +6,7 @@
 </head>
 <body>
 <div class="container">
+    <p id="hint"></p>
     <form action="/ajax">
         <label for="username">用户名</label>
         <input type="text" name="username" id="username">
@@ -16,5 +17,26 @@
         <input type="submit" value="提交">
     </form>
 </div>
+<script src="common/util/validation.js"></script>
+<script>
+    let rules = [
+        {strategy: 'isEmpty', errorMsg: '用户名不能是空'},
+        {strategy: 'hasSpace', errorMsg: '用户名不能有空格'},
+        {strategy: 'maxLength:6', errorMsg: '最长为6'},
+    ];
+    let username = document.getElementById('username');
+    let hint = document.getElementById('hint');
+    let validator = new Validation();
+
+    validator.addByDom(username, 'username', rules);
+
+    username.addEventListener('change', function () {
+        let msg = validator.validate('username');
+
+        if (msg) {
+            hint.innerText = msg;
+        }
+    });
+</script>
 </body>
 </html>

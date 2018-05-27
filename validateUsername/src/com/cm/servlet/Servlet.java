@@ -10,7 +10,14 @@ import java.io.IOException;
 public class Servlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("utf-8");
-        response.getWriter().print("OK");
+
+        String username = request.getParameter("username");
+
+        if (username.equals("cm")) {
+            response.getWriter().print("no");
+        } else {
+            response.getWriter().print("yes");
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
