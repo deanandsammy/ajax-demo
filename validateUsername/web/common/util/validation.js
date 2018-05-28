@@ -21,11 +21,11 @@ function Validation() {
     this.validateQueue = {};
 }
 
-Validation.prototype.addByDom = function (dom, name, rules) {
+Validation.prototype.addByDom = function (name, rules) {
     let funcArr = [];
 
-    rules.forEach(function (item, index) {
-        funcArr.push(function () {
+    rules.forEach(function (item) {
+        funcArr.push(function (dom) {
             let strategyArr = item.strategy.split(':'),
                 strategy    = strategyArr.shift();
 
@@ -39,12 +39,15 @@ Validation.prototype.addByDom = function (dom, name, rules) {
     this.validateQueue[name] = funcArr;
 };
 
-Validation.prototype.validate = function (name) {
-    this.validateQueue[name].forEach(function (fn) {
-        let msg = fn();
-
+Validation.prototype.validate = function (dom, name) {
+    let fmQueue = this.validateQueue[name];
+    let len = this.validateQueue[name].length;
+    let msg = '';
+    for (let i = 0; i < len; i++) {
+        msg = fmQueue[i](dom);
         if (msg) {
-            return msg;
+            break;
         }
-    });
+    }
+    return msg;
 };
