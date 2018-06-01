@@ -3,74 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>
-        #hint {
-            display: none;
-            margin: 0;
-            padding: 0;
-            width: 180px;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            border: 1px solid red;
-            color: #555555;
-            background-color: papayawhip;
-        }
+    <link rel="stylesheet" href="common/css/main.css">
+    <script src="common/util/validation.js"></script>
+    <script>
+        window.onload = function () {
+            let username = document.getElementById('username');
+            let hint = document.getElementById('hint');
 
-        .form {
-            margin-top: 20px;
-        }
+            // 前端验证
+            let validator = new Validation();
+            let rules = [
+                {strategy: 'isEmpty', errorMsg: '用户名不能是空'},
+                {strategy: 'hasSpace', errorMsg: '用户名不能有空格'},
+                {strategy: 'minLength:6', errorMsg: '最小长度为6'},
+            ];
 
-        .container label {
-            display: inline-block;
-            width: 50px;
+            validator.addByDom('username', rules);
+
+            let validationInfo = '';
+            username.addEventListener('input', function () {
+                validationInfo = validator.validate(username, 'username');
+                let display = '';
+                let innerText = '';
+
+                if (validationInfo) {
+                    innerText = validationInfo;
+                    display = 'block';
+                } else {
+                    innerText = '';
+                    display = 'none';
+                }
+
+                hint.innerText = innerText;
+                hint.style.display = display;
+                validator.usernameCache = username.value;
+                validator.onOff = false;
+            });
+
+            username.addEventListener('blur', function () {
+                // 输入的用户名如果不合法，不提交 Ajax 请求验证用户名是否可用
+                if (validationInfo) {
+                    return;
+                }
+
+                // 已验证是否可用的用户名不再重复发送 Ajax 验证
+                let onOff = validator.onOff;
+                let usernameCache = validator.usernameCache;
+                let newUsername = username.value;
+
+                if ((onOff && newUsername === usernameCache) || newUsername.trim() === '') {
+                    return;
+                }
+
+                // Ajax 验证用户名是否可用
+                const xhr = new XMLHttpRequest();
+                const value = username.value;
+                let queryStr = 'name=' + value;
+
+                xhr.open('post', '/ajax');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        hint.style.display = 'block';
+                        hint.innerText = xhr.responseText;
+                    }
+                };
+
+                xhr.send(queryStr);
+                validator.onOff = true;
+            });
         }
-    </style>
+    </script>
 </head>
 <body>
 <div class="container">
-    <p id="hint"></p>
     <div class="form">
-        <form action="/ajax">
-            <label for="username">用户名</label>
-            <input type="text" name="username" id="username">
+        <p id="hint"></p>
+        <form action="/ajax" enctype="">
+            <label for="username">用户名</label><input type="text" name="username" id="username">
             <br>
-            <label for="password">密码</label>
-            <input type="password" name="password" id="password">
+            <label for="password">密码</label><input type="password" name="password" id="password">
             <br>
             <input type="submit" value="提交">
         </form>
     </div>
 </div>
-<script src="common/util/validation.js"></script>
-<script>
-    let rules = [
-        {strategy: 'isEmpty', errorMsg: '用户名不能是空'},
-        {strategy: 'hasSpace', errorMsg: '用户名不能有空格'},
-        {strategy: 'minLength:6', errorMsg: '最小长度为6'},
-    ];
-    console.log(validation);
-    let username = document.getElementById('username');
-    let hint = document.getElementById('hint');
-    let validator = new Validation();
-
-    validator.addByDom('username', rules);
-
-    username.addEventListener('input', function () {
-        let msg = validator.validate(username, 'username');
-        let display = '';
-        let innerText = '';
-        if (msg) {
-            innerText = msg;
-            display = 'block';
-        } else {
-            innerText = '';
-            display = 'none';
-        }
-
-        hint.innerText = innerText;
-        hint.style.display = display;
-    });
-</script>
 </body>
 </html>

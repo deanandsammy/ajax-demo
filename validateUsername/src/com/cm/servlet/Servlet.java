@@ -11,12 +11,12 @@ public class Servlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("utf-8");
 
-        String username = request.getParameter("username");
+        String username = request.getParameter("name");
 
-        if (username.equals("cm")) {
-            response.getWriter().print("no");
+        if (username.equals("dean")) {
+            response.getWriter().print("用户名已被占用");
         } else {
-            response.getWriter().print("yes");
+            response.getWriter().print("恭喜您，此用户名可用");
         }
     }
 

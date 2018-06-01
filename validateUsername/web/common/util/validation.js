@@ -19,6 +19,8 @@ const validation = {
 
 function Validation() {
     this.validateQueue = {};
+    this.usernameCache = '';
+    this.onOff = false;
 }
 
 Validation.prototype.addByDom = function (name, rules) {
